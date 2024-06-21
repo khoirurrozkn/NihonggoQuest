@@ -12,4 +12,6 @@ class User extends Model
     use HasApiTokens, HasFactory, Notifiable;
 
     protected $guarded = [];
+
+    public $timestamps = false;
 }
