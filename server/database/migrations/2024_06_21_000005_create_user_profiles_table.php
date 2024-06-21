@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('user_profiles', function (Blueprint $table) {
             $table->id("user_profile_id");
             $table->string("bio")->default("Japan language is easy")->nullable();
-            $table->ulid("user_id")->unique()->nullable(false);
+            $table->uuid("user_id")->unique()->nullable(false);
             $table->unsignedBigInteger("photo_profile_id")->nullable(false);
             $table->unsignedBigInteger("rank_id")->nullable(false);
 
