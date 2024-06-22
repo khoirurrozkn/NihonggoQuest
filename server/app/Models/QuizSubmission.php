@@ -9,5 +9,5 @@ class QuizSubmission extends Model
 {
     use HasFactory;
 
-    protected $guarded = ['quiz_submission_id'];
+    protected $guarded = ['id'];
 }

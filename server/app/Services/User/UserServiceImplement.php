@@ -8,7 +8,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Hash;
 use Ramsey\Uuid\Uuid;
 use Carbon\Carbon;
-use Laravel\Sanctum\PersonalAccessToken;
 
 class UserServiceImplement extends ServiceApi implements UserService
 {

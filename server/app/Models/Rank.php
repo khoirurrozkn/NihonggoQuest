@@ -9,5 +9,5 @@ class Rank extends Model
 {
     use HasFactory;
 
-    protected $guarded = ['rank_id'];
+    protected $guarded = ['id'];
 }

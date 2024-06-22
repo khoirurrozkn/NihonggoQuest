@@ -9,5 +9,5 @@ class PhotoProfile extends Model
 {
     use HasFactory;
 
-    protected $guarded = ['photo_profile_id'];
+    protected $guarded = ['id'];
 }

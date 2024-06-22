@@ -9,5 +9,5 @@ class QuizItem extends Model
 {
     use HasFactory;
 
-    protected $guarded = ['quiz_item_id'];
+    protected $guarded = ['id'];
 }

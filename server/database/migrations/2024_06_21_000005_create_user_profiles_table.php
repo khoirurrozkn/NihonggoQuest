@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string("bio")->default("Japan language is easy")->nullable();
             $table->ulid("user_id")->unique()->nullable(false);
-            $table->unsignedBigInteger("photo_profile_id")->nullable(false);
-            $table->unsignedBigInteger("rank_id")->nullable(false);
+            $table->unsignedBigInteger("photo_profile_id")->default(1);
+            $table->unsignedBigInteger("rank_id")->default(1);
 
             $table->foreign("user_id")->references("id")->on("users")->onDelete("cascade");
             $table->foreign("photo_profile_id")->references("id")->on("photo_profiles");
