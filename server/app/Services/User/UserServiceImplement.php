@@ -7,6 +7,8 @@ use App\Repositories\User\UserRepository;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Hash;
 use Ramsey\Uuid\Uuid;
+use Carbon\Carbon;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class UserServiceImplement extends ServiceApi implements UserService
 {
@@ -21,7 +23,7 @@ class UserServiceImplement extends ServiceApi implements UserService
     {
         $findUser = $this->mainRepository->findByEmail($email);
 
-        if ($findUser) {
+        if( $findUser ){
             return [
                 "code" => Response::HTTP_CONFLICT,
                 "description" => "Email has been exists"
@@ -29,10 +31,29 @@ class UserServiceImplement extends ServiceApi implements UserService
         }
 
         return $this->mainRepository->create([
-            'user_id' => Uuid::uuid7()->toString(),
+            'id' => Uuid::uuid7()->toString(),
             'username' => $username,
             'email' => $email,
             'password' => Hash::make($password)
         ]);
+    }
+
+    public function login($email, $password){
+        $findUser = $this->mainRepository->findByEmail($email);
+
+        if( !$findUser || !Hash::check($password, $findUser['password'])){
+            return [
+                "code" => Response::HTTP_BAD_REQUEST,
+                "description" => "Email or Password is invalid"
+            ];
+        }
+
+        $findUser['token'] = $findUser->createToken(
+            'User Login', 
+            ['*'], 
+            Carbon::now()->addDay()
+        )->plainTextToken;
+
+        return $findUser;
     }
 }
