@@ -12,15 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('user_profiles', function (Blueprint $table) {
-            $table->id("user_profile_id");
+            $table->id();
             $table->string("bio")->default("Japan language is easy")->nullable();
-            $table->uuid("user_id")->unique()->nullable(false);
+            $table->ulid("user_id")->unique()->nullable(false);
             $table->unsignedBigInteger("photo_profile_id")->nullable(false);
             $table->unsignedBigInteger("rank_id")->nullable(false);
 
-            $table->foreign("user_id")->references("user_id")->on("users")->onDelete("cascade");
-            $table->foreign("photo_profile_id")->references("photo_profile_id")->on("photo_profiles");
-            $table->foreign("rank_id")->references("rank_id")->on("ranks");
+            $table->foreign("user_id")->references("id")->on("users")->onDelete("cascade");
+            $table->foreign("photo_profile_id")->references("id")->on("photo_profiles");
+            $table->foreign("rank_id")->references("id")->on("ranks");
         });
     }
 

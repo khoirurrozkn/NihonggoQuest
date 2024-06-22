@@ -12,12 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('quiz_items', function (Blueprint $table) {
-            $table->id("quiz_item_id");
+            $table->id();
             $table->string("question")->nullable(false);
             $table->string("answer")->nullable(false);
             $table->unsignedBigInteger("quiz_id")->nullable(false);
 
-            $table->foreign('quiz_id')->references('quiz_id')->on('quizzes');
+            $table->foreign('quiz_id')->references('id')->on('quizzes');
         });
     }
 
