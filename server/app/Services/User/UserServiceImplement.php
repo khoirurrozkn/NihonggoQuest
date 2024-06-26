@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Hash;
 use Ramsey\Uuid\Uuid;
 use Carbon\Carbon;
+use DateTime;
 
 class UserServiceImplement extends ServiceApi implements UserService
 {
@@ -45,6 +46,10 @@ class UserServiceImplement extends ServiceApi implements UserService
                 "description" => "Email or Password is invalid"
             ];
         }
+
+        $date = new DateTime();
+        $formattedDate = $date->format('Y-m-d H:i:s');
+        $this->mainRepository->loginUpdateLastAcess($findUser, $formattedDate);
 
         $findUser['token'] = $findUser->createToken(
             'User Login', 

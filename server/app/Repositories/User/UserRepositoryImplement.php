@@ -52,4 +52,10 @@ class UserRepositoryImplement extends Eloquent implements UserRepository{
     public function deleteById($id){
         return $this->findById($id)->delete();
     }
+
+    public function loginUpdateLastAcess($user, $date){
+        return $user->update([
+            'last_access' => $date
+        ]);
+    }
 }
