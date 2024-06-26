@@ -7,7 +7,7 @@ use LaravelEasyRepository\BaseService;
 interface UserService extends BaseService{
 
     public function register($email, $username, $password);
-    public function login($email, $password);
+    public function login($usernameOrEmail, $password);
     public function findById($id);
     public function updateEmail($id, $oldEmail, $newEmail);
     public function updateUsername($id, $oldUsername, $newUsername);

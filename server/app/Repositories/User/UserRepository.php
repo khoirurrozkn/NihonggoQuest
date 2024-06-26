@@ -7,7 +7,7 @@ use LaravelEasyRepository\Repository;
 interface UserRepository extends Repository{
 
     public function create($user);
-    public function findByEmail($email);
+    public function findByUsernameOrEmail($usernameOrEmail, $username = null, $email = null);
     public function findById($id);
     public function updateEmail($id, $email);
     public function updateUsername($id, $username);

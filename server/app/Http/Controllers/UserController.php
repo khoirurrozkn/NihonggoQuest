@@ -48,7 +48,7 @@ class UserController extends Controller
         $request = $loginRequest->validated();
 
         $response = $this->userService->login(
-            $request['email'],
+            $request['username_or_email'],
             $request['password']
         );
 

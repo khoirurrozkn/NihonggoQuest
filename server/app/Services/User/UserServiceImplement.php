@@ -20,12 +20,12 @@ class UserServiceImplement extends ServiceApi implements UserService
     }
 
     public function register($email, $username, $password){
-        $findUser = $this->mainRepository->findByEmail($email);
+        $findUser = $this->mainRepository->findByUsernameOrEmail(null, $username, $email);
 
         if( $findUser ){
             return [
                 "code" => Response::HTTP_CONFLICT,
-                "description" => "Email has been exists"
+                "description" => "Email Or Username has been exists"
             ];
         }
 
@@ -37,13 +37,13 @@ class UserServiceImplement extends ServiceApi implements UserService
         ]);
     }
 
-    public function login($email, $password){
-        $findUser = $this->mainRepository->findByEmail($email);
+    public function login($usernameOrEmail, $password){
+        $findUser = $this->mainRepository->findByUsernameOrEmail($usernameOrEmail);
 
         if( !$findUser || !Hash::check($password, $findUser['password'])){
             return [
                 "code" => Response::HTTP_BAD_REQUEST,
-                "description" => "Email or Password is invalid"
+                "description" => "Username - Email or Password is invalid"
             ];
         }
 

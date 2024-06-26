@@ -23,8 +23,10 @@ class UserRepositoryImplement extends Eloquent implements UserRepository{
         return $this->model->create($user);
     }
 
-    public function findByEmail($email) {
-        return $this->model->where("email", $email)->first();
+    public function findByUsernameOrEmail($usernameOrEmail, $username = null, $email = null){
+        return $this->model->where("username", $username ?? $usernameOrEmail)
+                            ->orWhere("email", $email ?? $usernameOrEmail)
+                            ->first();
     }
 
     public function findById($id) {
