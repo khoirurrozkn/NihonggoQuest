@@ -13,6 +13,7 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, ValidatesRequests;
 
+    // DTO
     protected function responseDataSuccess($code, $description, $data){
         return response()->json([
             'status' => [
@@ -23,6 +24,7 @@ class Controller extends BaseController
         ], $code);
     }
 
+    // DTO
     protected function responseError($code, $description){
         return response()->json([
             'status' => [
@@ -32,6 +34,7 @@ class Controller extends BaseController
         ], $code);
     }
 
+    // DTO
     protected function responseServerError($errorMessage, $classAndMethod){
         $currentTime = (new DateTime())->format('Y-m-d H:i');
         Log::error("Location : {$classAndMethod}\nDescription : {$errorMessage}\nTime : {$currentTime}\n\n");

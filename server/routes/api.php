@@ -21,8 +21,14 @@ Route::prefix('/auth')->group(function () {
 
 Route::prefix('/user')->middleware('auth:sanctum')->group(function () {
     Route::get('/{id}', [UserController::class, 'findById']);
-    
-    Route::put('/update/email', [UserController::class, 'updateEmail']);
-    Route::put('/update/username', [UserController::class, 'updateUsername']);
-    Route::put('/update/password', [UserController::class, 'updatePassword']);
+    Route::put('/email', [UserController::class, 'updateEmail']);
+    Route::put('/username', [UserController::class, 'updateUsername']);
+    Route::put('/password', [UserController::class, 'updatePassword']);
+    Route::delete('/{id}', [UserController::class, 'deleteById']);
 });
+
+// Route::get('/', function(){
+//     return response()->json([
+//         "message" => "wadawd"
+//     ]);
+// })->middleware('abilities:admin');

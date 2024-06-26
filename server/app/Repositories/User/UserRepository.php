@@ -12,4 +12,5 @@ interface UserRepository extends Repository{
     public function updateEmail($id, $email);
     public function updateUsername($id, $username);
     public function updatePassword($id, $password);
+    public function deleteById($id);
 }

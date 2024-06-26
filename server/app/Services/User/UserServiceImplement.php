@@ -48,7 +48,7 @@ class UserServiceImplement extends ServiceApi implements UserService
 
         $findUser['token'] = $findUser->createToken(
             'User Login', 
-            ['*'], 
+            ['user'], 
             Carbon::now()->addDay()
         )->plainTextToken;
 
@@ -71,31 +71,13 @@ class UserServiceImplement extends ServiceApi implements UserService
     public function updateEmail($id, $oldEmail, $newEmail){
         if( $oldEmail === $newEmail ) return true;
 
-        $updatedEmail = $this->mainRepository->updateEmail($id, $newEmail);
-
-        if( !$updatedEmail ){
-            return [
-                "code" => Response::HTTP_BAD_REQUEST,
-                "description" => "Failed update email"
-            ];
-        }
-
-        return true;
+        return $this->mainRepository->updateEmail($id, $newEmail);
     }
 
     public function updateUsername($id, $oldUsername, $newUsername){
         if( $oldUsername === $newUsername ) return true;
 
-        $updatedUsername = $this->mainRepository->updateUsername($id, $newUsername);
-
-        if( !$updatedUsername ){
-            return [
-                "code" => Response::HTTP_BAD_REQUEST,
-                "description" => "Failed update username"
-            ];
-        }
-
-        return true;
+        return $this->mainRepository->updateUsername($id, $newUsername);
     }
 
     public function updatePassword($id, $passwordFromToken, $oldPassword, $newPassword){
@@ -108,16 +90,15 @@ class UserServiceImplement extends ServiceApi implements UserService
 
         if( $oldPassword === $newPassword ) return true;
 
-        $updatedPassword = $this->mainRepository->updatePassword($id, Hash::make($newPassword));
-
-        if( !$updatedPassword ){
-            return [
-                "code" => Response::HTTP_BAD_REQUEST,
-                "description" => "Failed update password"
-            ];
-        }
-
-        return true;
+        return $this->mainRepository->updatePassword($id, Hash::make($newPassword));
     }
 
+    public function deleteById($idFromToken, $idFromParam, $isAdmin){
+        if( $isAdmin ) {
+            $this->findById($idFromParam);
+            return $this->mainRepository->deleteById($idFromParam);
+        };
+
+        return $this->mainRepository->deleteById($idFromToken);
+    }
 }

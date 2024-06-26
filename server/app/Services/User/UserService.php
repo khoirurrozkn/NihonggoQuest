@@ -12,4 +12,5 @@ interface UserService extends BaseService{
     public function updateEmail($id, $oldEmail, $newEmail);
     public function updateUsername($id, $oldUsername, $newUsername);
     public function updatePassword($id, $passwordFromToken, $oldPassword, $newPassword);
+    public function deleteById($idFromToken, $idFromParam, $isAdmin);
 }

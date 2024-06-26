@@ -47,7 +47,7 @@ class Handler extends ExceptionHandler
             }
 
             $trace = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 2);
-            $method = isset($trace[1]['class']) ? $trace[1]['class'] . '::' . $trace[1]['function'] : 'Unknown';
+            $method = isset($trace[1]['class']) ? "\nCONTROLLER::method >>> " . $trace[1]['function'] : 'Unknown' . "\n\n";
             Log::error('Exception in ' . $method . ': ' . $exception->getMessage());
             return response()->json([
                 'status' => [

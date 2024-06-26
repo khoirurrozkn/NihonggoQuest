@@ -9,6 +9,7 @@ use App\Http\Requests\UserUpdatePasswordRequest;
 use App\Http\Requests\UserUpdateUsernameRequest;
 use App\Http\Resources\UserResource;
 use App\Services\User\UserServiceImplement;
+use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class UserController extends Controller
@@ -85,18 +86,11 @@ class UserController extends Controller
     public function updateEmail(UserUpdateEmailRequest $userUpdateEmailRequest){
         $request = $userUpdateEmailRequest->validated();
 
-        $response = $this->userService->updateEmail(
+        $this->userService->updateEmail(
             auth()->user()->id,
             auth()->user()->email,
             $request['email']
         );
-
-        if( isset($response['code']) ){
-            return $this->responseError(
-                $response['code'], 
-                $response['description']
-            );
-        }
             
         auth()->user()->email = $request['email'];
         return $this->responseDataSuccess(
@@ -109,18 +103,11 @@ class UserController extends Controller
     public function updateUsername(UserUpdateUsernameRequest $userUpdateUsernameRequest){
         $request = $userUpdateUsernameRequest->validated();
 
-        $response = $this->userService->updateUsername(
+        $this->userService->updateUsername(
             auth()->user(),
             auth()->user()->username,
             $request['username'],
         );
-
-        if( isset($response['code']) ){
-            return $this->responseError(
-                $response['code'], 
-                $response['description']
-            );
-        }
 
         auth()->user()->username = $request['username'];
         return $this->responseDataSuccess(
@@ -154,4 +141,26 @@ class UserController extends Controller
         );
     }
 
+    public function deleteById(Request $request, $paramId){
+        $isAdmin = $request->user()->currentAccessToken()->abilities[0] === 'admin';
+        $response = $this->userService->deleteById(
+            auth()->user()->id,
+            $paramId,
+            $isAdmin
+        );
+
+        if( isset($response['code']) ){
+            return $this->responseError(
+                $response['code'], 
+                $response['description']
+            );
+        }
+
+        $request->user()->currentAccessToken()->delete();
+        return $this->responseDataSuccess(
+            Response::HTTP_OK, 
+            "Success delete user",
+            null
+        );
+    }
 }
