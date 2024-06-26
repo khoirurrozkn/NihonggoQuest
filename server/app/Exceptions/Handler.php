@@ -2,9 +2,11 @@
 
 namespace App\Exceptions;
 
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -26,7 +28,16 @@ class Handler extends ExceptionHandler
     public function register(): void
     {
         $this->renderable(function (Throwable $exception) {
-            if ($exception instanceof \Illuminate\Auth\AuthenticationException) {
+            if ($exception instanceof NotFoundHttpException) {
+                return response()->json([
+                    'status' => [
+                        'code' => Response::HTTP_NOT_FOUND,
+                        'description' => 'Route not found'
+                    ]
+                ], Response::HTTP_NOT_FOUND);
+            }
+
+            if ($exception instanceof AuthenticationException) {
                 return response()->json([
                     'status' => [
                         'code' => Response::HTTP_UNAUTHORIZED,
