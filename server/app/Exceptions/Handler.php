@@ -6,6 +6,7 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
@@ -44,6 +45,15 @@ class Handler extends ExceptionHandler
                         'description' => 'Unauthenticated'
                     ]
                 ], Response::HTTP_UNAUTHORIZED);
+            }
+
+            if ($exception instanceof AccessDeniedHttpException) {
+                return response()->json([
+                    'status' => [
+                        'code' => Response::HTTP_FORBIDDEN,
+                        'description' => 'Invalid ability provided'
+                    ]
+                ], Response::HTTP_FORBIDDEN);
             }
 
             $trace = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 2);

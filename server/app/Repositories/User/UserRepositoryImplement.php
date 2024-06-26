@@ -34,25 +34,25 @@ class UserRepositoryImplement extends Eloquent implements UserRepository{
     }
 
     public function updateEmail($id, $email){
-        return $this->findById($id)->update([
+        return ( $this->findById($id) )->update([
             "email" => $email
         ]);
     }
 
     public function updateUsername($id, $username){
-        return $this->findById($id)->update([
+        return ( $this->findById($id) )->update([
             "username" => $username
         ]);
     }
 
     public function updatePassword($id, $password){
-        return $this->findById($id)->update([
+        return ( $this->findById($id) )->update([
             "password" => $password
         ]);
     }
 
     public function deleteById($id){
-        return $this->findById($id)->delete();
+        return ( $this->findById($id) )->delete();
     }
 
     public function loginUpdateLastAcess($user, $date){

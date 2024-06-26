@@ -63,7 +63,7 @@ class UserServiceImplement extends ServiceApi implements UserService
     public function findById($id){
         $findUser = $this->mainRepository->findById($id);
 
-        if( !$findUser ){
+        if( !isset($findUser) ){
             return [
                 "code" => Response::HTTP_NOT_FOUND,
                 "description" => "User not found"
