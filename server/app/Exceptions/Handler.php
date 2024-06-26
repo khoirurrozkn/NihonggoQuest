@@ -3,6 +3,8 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -23,8 +25,25 @@ class Handler extends ExceptionHandler
      */
     public function register(): void
     {
-        $this->reportable(function (Throwable $e) {
-            //
+        $this->renderable(function (Throwable $exception) {
+            if ($exception instanceof \Illuminate\Auth\AuthenticationException) {
+                return response()->json([
+                    'status' => [
+                        'code' => Response::HTTP_UNAUTHORIZED,
+                        'description' => 'Unauthenticated'
+                    ]
+                ], Response::HTTP_UNAUTHORIZED);
+            }
+
+            $trace = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 2);
+            $method = isset($trace[1]['class']) ? $trace[1]['class'] . '::' . $trace[1]['function'] : 'Unknown';
+            Log::error('Exception in ' . $method . ': ' . $exception->getMessage());
+            return response()->json([
+                'status' => [
+                    'code' => Response::HTTP_INTERNAL_SERVER_ERROR,
+                    'description' => 'Server error, please try again later'
+                ]
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         });
     }
 }

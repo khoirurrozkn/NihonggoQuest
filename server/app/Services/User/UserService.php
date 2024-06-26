@@ -8,4 +8,8 @@ interface UserService extends BaseService{
 
     public function register($email, $username, $password);
     public function login($email, $password);
+    public function findById($id);
+    public function updateEmail($id, $oldEmail, $newEmail);
+    public function updateUsername($id, $oldUsername, $newUsername);
+    public function updatePassword($id, $passwordFromToken, $oldPassword, $newPassword);
 }

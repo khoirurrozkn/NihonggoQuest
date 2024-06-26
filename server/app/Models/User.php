@@ -14,4 +14,12 @@ class User extends Model
     protected $guarded = [];
 
     public $timestamps = false;
+
+    public function getIncrementing(){
+        return false;
+    }
+
+    public function getKeyType(){
+        return "string";
+    }
 }

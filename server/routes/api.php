@@ -18,3 +18,9 @@ Route::prefix('/auth')->group(function () {
     Route::post('/register', [UserController::class, 'register']);
     Route::post('/login', [UserController::class, 'login']);
 });
+
+Route::prefix('/user')->middleware('auth:sanctum')->group(function () {
+    Route::put('/update/email', [UserController::class, 'updateEmail']);
+    Route::put('/update/username', [UserController::class, 'updateUsername']);
+    Route::put('/update/password', [UserController::class, 'updatePassword']);
+});

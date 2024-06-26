@@ -18,8 +18,7 @@ class UserServiceImplement extends ServiceApi implements UserService
         $this->mainRepository = $mainRepository;
     }
 
-    public function register($email, $username, $password)
-    {
+    public function register($email, $username, $password){
         $findUser = $this->mainRepository->findByEmail($email);
 
         if( $findUser ){
@@ -55,4 +54,70 @@ class UserServiceImplement extends ServiceApi implements UserService
 
         return $findUser;
     }
+
+    public function findById($id){
+        $findUser = $this->mainRepository->findById($id);
+
+        if( !$findUser ){
+            return [
+                "code" => Response::HTTP_NOT_FOUND,
+                "description" => "User not found"
+            ];
+        }
+
+        return $findUser;
+    }
+
+    public function updateEmail($id, $oldEmail, $newEmail){
+        if( $oldEmail === $newEmail ) return true;
+
+        $updatedEmail = $this->mainRepository->updateEmail($id, $newEmail);
+
+        if( !$updatedEmail ){
+            return [
+                "code" => Response::HTTP_BAD_REQUEST,
+                "description" => "Failed update email"
+            ];
+        }
+
+        return true;
+    }
+
+    public function updateUsername($id, $oldUsername, $newUsername){
+        if( $oldUsername === $newUsername ) return true;
+
+        $updatedUsername = $this->mainRepository->updateUsername($id, $newUsername);
+
+        if( !$updatedUsername ){
+            return [
+                "code" => Response::HTTP_BAD_REQUEST,
+                "description" => "Failed update username"
+            ];
+        }
+
+        return true;
+    }
+
+    public function updatePassword($id, $passwordFromToken, $oldPassword, $newPassword){
+        if( !Hash::check($oldPassword, $passwordFromToken) ){
+            return [
+                "code" => Response::HTTP_BAD_REQUEST,
+                "description" => "Old password don't match"
+            ];
+        }
+
+        if( $oldPassword === $newPassword ) return true;
+
+        $updatedPassword = $this->mainRepository->updatePassword($id, Hash::make($newPassword));
+
+        if( !$updatedPassword ){
+            return [
+                "code" => Response::HTTP_BAD_REQUEST,
+                "description" => "Failed update password"
+            ];
+        }
+
+        return true;
+    }
+
 }
