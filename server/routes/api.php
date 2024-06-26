@@ -20,6 +20,8 @@ Route::prefix('/auth')->group(function () {
 });
 
 Route::prefix('/user')->middleware('auth:sanctum')->group(function () {
+    Route::get('/{id}', [UserController::class, 'findById']);
+    
     Route::put('/update/email', [UserController::class, 'updateEmail']);
     Route::put('/update/username', [UserController::class, 'updateUsername']);
     Route::put('/update/password', [UserController::class, 'updatePassword']);

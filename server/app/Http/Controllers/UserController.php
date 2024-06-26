@@ -65,6 +65,23 @@ class UserController extends Controller
         );
     }
 
+    public function findById($id){
+        $response = $this->userService->findById($id);
+
+        if( isset($response['code']) ){
+            return $this->responseError(
+                $response['code'], 
+                $response['description']
+            );
+        }
+        
+        return $this->responseDataSuccess(
+            Response::HTTP_OK, 
+            "Success find by id user",
+            new UserResource($response)
+        );
+    }
+
     public function updateEmail(UserUpdateEmailRequest $userUpdateEmailRequest){
         $request = $userUpdateEmailRequest->validated();
 
