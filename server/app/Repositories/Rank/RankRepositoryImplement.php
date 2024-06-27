@@ -19,11 +19,20 @@ class RankRepositoryImplement extends Eloquent implements RankRepository{
         $this->model = $model;
     }
 
+    public function create($name){
+        return $this->model->create($name);
+    }
+
+    public function findAll(){
+        return $this->model->orderBy('id', 'asc')->get();
+    }    
+
     public function findByName($name) {
         return $this->model->where('name', $name)->first();
     }
 
-    public function create($name){
-        return $this->model->create($name);
+    public function findByIdWithTheirUsers($id){
+        return $this->model->with('userProfiles')->find($id);
     }
+
 }

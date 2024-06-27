@@ -22,4 +22,8 @@ class User extends Model
     public function getKeyType(){
         return "string";
     }
+
+    public function userProfile(){
+        return $this->hasOne(UserProfile::class, 'user_id', 'id');
+    }
 }

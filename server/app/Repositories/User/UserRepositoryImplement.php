@@ -31,10 +31,11 @@ class UserRepositoryImplement extends Eloquent implements UserRepository{
         return $this->model->where('username', $username)->first();
     }
 
-    public function findByUsernameOrEmail($usernameOrEmail){
-        return $this->model->where("username", $usernameOrEmail)
-                            ->orWhere("email", $usernameOrEmail)
-                            ->first();
+    public function findByUsernameOrEmailWithUserProfile($usernameOrEmail){
+        return $this->model->with('userProfile.photoProfile', 'userProfile.rank')
+            ->where("username", $usernameOrEmail)
+            ->orWhere("email", $usernameOrEmail)
+            ->first();
     }
 
     public function findById($id) {

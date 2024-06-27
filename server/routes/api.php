@@ -3,6 +3,8 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\RankController;
 use App\Http\Controllers\UserController;
+use App\Models\User;
+use App\Models\UserProfile;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,21 +19,24 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::prefix('/user')->group(function () {
-
+    
     Route::post('/register', [UserController::class, 'register']);
     Route::post('/login', [UserController::class, 'login']);
 
-    Route::middleware(['auth:sanctum', 'abilities:user,admin'])->group(function() {
-        Route::get('/{id}', [UserController::class, 'findById']);
-        Route::delete('/{id}', [UserController::class, 'deleteById']);
-    });
-    
-    Route::middleware(['auth:sanctum', 'ability:user'])->group(function() {
-        Route::put('/email', [UserController::class, 'updateEmail']);
-        Route::put('/username', [UserController::class, 'updateUsername']);
-        Route::put('/password', [UserController::class, 'updatePassword']);
-    });
+    Route::middleware('auth:sanctum')->group(function() {
 
+        Route::middleware('abilities:user,admin')->group(function() {
+            Route::get('/{id}', [UserController::class, 'findById']);
+            Route::delete('/{id}', [UserController::class, 'deleteById']);
+        });
+        
+        Route::middleware('ability:user')->group(function() {
+            Route::put('/email', [UserController::class, 'updateEmail']);
+            Route::put('/username', [UserController::class, 'updateUsername']);
+            Route::put('/password', [UserController::class, 'updatePassword']);
+        });
+
+    });
 });
 
 Route::prefix('/admin')->group(function () {
@@ -46,28 +51,19 @@ Route::prefix('/admin')->group(function () {
     
 });
 
-Route::prefix('/rank')->group(function () {
+Route::prefix('/rank')->middleware('auth:sanctum')->group(function () {
 
-    Route::middleware(['auth:sanctum', 'ability:admin'])->group(function() {
+    Route::middleware('abilities:user,admin')->group(function() {
+        Route::get('/', [RankController::class, 'findAll']);
+        Route::get('/{id}', [RankController::class, 'findByIdWithTheirUsers']);
+    });
+
+    Route::middleware('ability:admin')->group(function() {
         Route::post('/', [RankController::class, 'create']);
     });
     
 });
 
 Route::get('/', function(){
-    // try{
-
-    $tes = (new a)->b();
-
-    // }catch(\Illuminate\Database\Eloquent\ModelNotFoundException $e){
-    //     return response()->json([
-    //         'code' => $e->getMessage()
-    //     ]);
-    // }
+    return UserProfile::with('rank')->find(3);
 });
-
-class a{
-    public function b(){
-        throw new \Illuminate\Database\Eloquent\ModelNotFoundException("tidak di temukan");
-    }
-}

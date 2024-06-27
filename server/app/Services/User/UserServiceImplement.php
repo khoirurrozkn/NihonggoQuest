@@ -4,7 +4,7 @@ namespace App\Services\User;
 
 use LaravelEasyRepository\ServiceApi;
 use App\Repositories\User\UserRepository;
-use Symfony\Component\HttpFoundation\Response;
+use App\Repositories\UserProfile\UserProfileRepository;
 use Illuminate\Support\Facades\Hash;
 use Ramsey\Uuid\Uuid;
 use Carbon\Carbon;
@@ -16,10 +16,15 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class UserServiceImplement extends ServiceApi implements UserService
 {
     protected $mainRepository;
+    protected $userProfileRepository;
 
-    public function __construct(UserRepository $mainRepository)
+    public function __construct(
+        UserRepository $mainRepository, 
+        UserProfileRepository $userProfileRepository
+        )
     {
         $this->mainRepository = $mainRepository;
+        $this->userProfileRepository = $userProfileRepository;
     }
 
     public function register($email, $username, $password){
@@ -31,16 +36,22 @@ class UserServiceImplement extends ServiceApi implements UserService
             throw new ConflictHttpException('Username has been exists');
         }
 
-        return $this->mainRepository->create([
+        $createdUser = $this->mainRepository->create([
             'id' => Uuid::uuid7()->toString(),
             'username' => $username,
             'email' => $email,
             'password' => Hash::make($password)
         ]);
+
+        $this->userProfileRepository->create([
+            'user_id' => $createdUser['id'],
+        ]);
+
+        return $createdUser;
     }
 
     public function login($usernameOrEmail, $password){
-        $findUser = $this->mainRepository->findByUsernameOrEmail($usernameOrEmail);
+        $findUser = $this->mainRepository->findByUsernameOrEmailWithUserProfile($usernameOrEmail);
 
         if( !$findUser || !Hash::check($password, $findUser['password'])){
             throw new BadRequestHttpException("Username - Email or Password is invalid");
@@ -70,7 +81,7 @@ class UserServiceImplement extends ServiceApi implements UserService
     public function updateEmail($id, $oldEmail, $newEmail){
         if( $oldEmail === $newEmail ) return true;
 
-        return $this->mainRepository->updateEmail($id, $newEmail);
+        return $this->mainRepository->updateEmail($id, ['email' => $newEmail]);
     }
 
     public function updateUsername($id, $oldUsername, $newUsername){

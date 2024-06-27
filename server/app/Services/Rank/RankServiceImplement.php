@@ -4,7 +4,6 @@ namespace App\Services\Rank;
 
 use LaravelEasyRepository\ServiceApi;
 use App\Repositories\Rank\RankRepository;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 
 class RankServiceImplement extends ServiceApi implements RankService{
@@ -24,5 +23,13 @@ class RankServiceImplement extends ServiceApi implements RankService{
         return $this->mainRepository->create([
             'name' => $name
         ]);
+    }
+
+    public function findAll(){
+        return $this->mainRepository->findAll();
+    }
+
+    public function findByIdWithTheirUsers($id){
+        return $this->mainRepository->findByIdWithTheirUsers($id);
     }
 }

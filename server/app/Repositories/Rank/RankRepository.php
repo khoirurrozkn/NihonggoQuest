@@ -6,6 +6,8 @@ use LaravelEasyRepository\Repository;
 
 interface RankRepository extends Repository{
 
-    public function findByName($name);
     public function create($name);
+    public function findAll();
+    public function findByName($name);
+    public function findByIdWithTheirUsers($id);
 }

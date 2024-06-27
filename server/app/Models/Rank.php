@@ -12,4 +12,8 @@ class Rank extends Model
     protected $guarded = ['id'];
 
     public $timestamps = false;
+
+    public function userProfiles(){
+        return $this->hasMany(UserProfile::class, 'rank_id', 'id');
+    }
 }

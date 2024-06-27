@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class RankResource extends JsonResource
+class UserProfileResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,8 +16,9 @@ class RankResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
-            'user_profiles' => UserProfileResource::collection($this->whenLoaded('userProfiles'))
+            'photo_profile' => $this->photoProfile->url,
+            'bio' => $this->bio,
+            'rank' => $this->rank->name
         ];
     }
 }

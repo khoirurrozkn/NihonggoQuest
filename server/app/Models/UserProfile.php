@@ -10,4 +10,14 @@ class UserProfile extends Model
     use HasFactory;
 
     protected $guarded = ['id'];
+
+    public $timestamps = false;
+    
+    public function photoProfile(){
+        return $this->belongsto(PhotoProfile::class, 'photo_profile_id', 'id');
+    }
+
+    public function rank(){
+        return $this->belongsTo(Rank::class, 'rank_id', 'id');
+    }
 }

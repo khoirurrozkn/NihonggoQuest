@@ -30,4 +30,24 @@ class RankController extends Controller
             new RankResource($response)
         );
     }
+
+    public function findAll(){
+        $getAllRank = $this->rankService->findAll();
+
+        return Dto::success(
+            Response::HTTP_OK, 
+            "Success find all rank", 
+            RankResource::collection($getAllRank)
+        );
+    }
+
+    public function findByIdWithTheirUsers($id){
+        $getRankWithUsers = $this->rankService->findByIdWithTheirUsers($id);
+
+        return Dto::success(
+            Response::HTTP_OK, 
+            "Success find rank with their user", 
+            new RankResource($getRankWithUsers)
+        );
+    }
 }
