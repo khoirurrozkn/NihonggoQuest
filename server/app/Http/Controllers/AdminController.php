@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Dto\Dto;
 use App\Http\Requests\AdminLoginRequest;
 use App\Http\Requests\AdminRegisterRequest;
 use App\Http\Resources\AdminResource;
@@ -25,14 +26,7 @@ class AdminController extends Controller
             $request['password']
         );
 
-        if( isset($response['code']) ){
-            return $this->responseError(
-                $response['code'], 
-                $response['description']
-            );
-        }
-
-        return $this->responseDataSuccess(
+        return Dto::success(
             Response::HTTP_CREATED, 
             "Success create admin", 
             new AdminResource($response)
@@ -47,15 +41,8 @@ class AdminController extends Controller
             $request['password']
         );
 
-        if( isset($response['code']) ){
-            return $this->responseError(
-                $response['code'], 
-                $response['description']
-            );
-        }
-
-        return $this->responseDataSuccess(
-            Response::HTTP_CREATED, 
+        return Dto::success(
+            Response::HTTP_OK, 
             "Success login admin", 
             new AdminResource($response)
         );
@@ -64,14 +51,7 @@ class AdminController extends Controller
     public function findAll(){
         $response = $this->adminService->findAll();
 
-        if( isset($response['code']) ){
-            return $this->responseError(
-                $response['code'], 
-                $response['description']
-            );
-        }
-
-        return $this->responseDataSuccess(
+        return Dto::success(
             Response::HTTP_OK, 
             "Success find all admin",
             AdminResource::collection($response)
@@ -79,16 +59,9 @@ class AdminController extends Controller
     }
 
     public function deleteById($id){
-        $response = $this->adminService->deleteById($id);
+        $this->adminService->deleteById($id);
 
-        if( isset($response['code']) ){
-            return $this->responseError(
-                $response['code'], 
-                $response['description']
-            );
-        }
-
-        return $this->responseDataSuccess(
+        return Dto::success(
             Response::HTTP_OK, 
             "Success delete admin",
             null

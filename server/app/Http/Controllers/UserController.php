@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Dto\Dto;
 use App\Http\Requests\UserLoginRequest;
 use App\Http\Requests\UserRegisterRequest;
 use App\Http\Requests\UserUpdateEmailRequest;
@@ -24,23 +25,16 @@ class UserController extends Controller
     public function register(UserRegisterRequest $userRegisterRequest){
         $request = $userRegisterRequest->validated();
 
-        $response = $this->userService->register(
+        $createdUser = $this->userService->register(
             $request['email'],
             $request['username'],
             $request['password']
         );
 
-        if( isset($response['code']) ){
-            return $this->responseError(
-                $response['code'], 
-                $response['description']
-            );
-        }
-
-        return $this->responseDataSuccess(
+        return Dto::success(
             Response::HTTP_CREATED, 
             "Success create user", 
-            new UserResource($response)
+            new UserResource($createdUser)
         );
     }
 
@@ -52,15 +46,8 @@ class UserController extends Controller
             $request['password']
         );
 
-        if( isset($response['code']) ){
-            return $this->responseError(
-                $response['code'], 
-                $response['description']
-            );
-        }
-
-        return $this->responseDataSuccess(
-            Response::HTTP_CREATED, 
+        return Dto::success(
+            Response::HTTP_OK, 
             "Success login user", 
             new UserResource($response)
         );
@@ -68,15 +55,8 @@ class UserController extends Controller
 
     public function findById($id){
         $response = $this->userService->findById($id);
-
-        if( isset($response['code']) ){
-            return $this->responseError(
-                $response['code'], 
-                $response['description']
-            );
-        }
         
-        return $this->responseDataSuccess(
+        return Dto::success(
             Response::HTTP_OK, 
             "Success find by id user",
             new UserResource($response)
@@ -93,7 +73,7 @@ class UserController extends Controller
         );
             
         auth()->user()->email = $request['email'];
-        return $this->responseDataSuccess(
+        return Dto::success(
             Response::HTTP_OK, 
             "Success update email user",
             new UserResource(auth()->user())
@@ -110,7 +90,7 @@ class UserController extends Controller
         );
 
         auth()->user()->username = $request['username'];
-        return $this->responseDataSuccess(
+        return Dto::success(
             Response::HTTP_OK, 
             "Success update username user",
             new UserResource(auth()->user())
@@ -120,21 +100,14 @@ class UserController extends Controller
     public function updatePassword(UserUpdatePasswordRequest $userUpdatePasswordRequest){
         $request = $userUpdatePasswordRequest->validated();
 
-        $response = $this->userService->updatePassword(
+        $this->userService->updatePassword(
             auth()->user(),
             auth()->user()->password,
             $request['old_password'],
             $request['new_password']
         );
 
-        if( isset($response['code']) ){
-            return $this->responseError(
-                $response['code'], 
-                $response['description']
-            );
-        }
-
-        return $this->responseDataSuccess(
+        return Dto::success(
             Response::HTTP_OK, 
             "Success update password", 
             new UserResource(auth()->user())
@@ -143,20 +116,13 @@ class UserController extends Controller
 
     public function deleteById(Request $request, $paramId){
         $isAdmin = $request->user()->currentAccessToken()->abilities[0] === 'admin';
-        $response = $this->userService->deleteById(
+        $this->userService->deleteById(
             auth()->user()->id,
             $paramId,
             $isAdmin
         );
 
-        if( isset($response['code']) ){
-            return $this->responseError(
-                $response['code'], 
-                $response['description']
-            );
-        }
-
-        return $this->responseDataSuccess(
+        return Dto::success(
             Response::HTTP_OK, 
             "Success delete user",
             null

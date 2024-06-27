@@ -7,11 +7,14 @@ use LaravelEasyRepository\Repository;
 interface UserRepository extends Repository{
 
     public function create($user);
-    public function findByUsernameOrEmail($usernameOrEmail, $username = null, $email = null);
+    public function findByEmail($email);
+    public function findByUsername($username);
+    public function findByUsernameOrEmail($usernameOrEmail);
     public function findById($id);
     public function updateEmail($id, $email);
     public function updateUsername($id, $username);
     public function updatePassword($id, $password);
     public function deleteById($id);
-    public function loginUpdateLastAcessByInstance($userModel, $date);
+    
+    public function updateLastAcessByInstance($userModel, $date);
 }

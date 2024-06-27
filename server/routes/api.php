@@ -1,8 +1,8 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\RankController;
 use App\Http\Controllers\UserController;
-// use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -46,10 +46,28 @@ Route::prefix('/admin')->group(function () {
     
 });
 
+Route::prefix('/rank')->group(function () {
 
+    Route::middleware(['auth:sanctum', 'ability:admin'])->group(function() {
+        Route::post('/', [RankController::class, 'create']);
+    });
+    
+});
 
-// Route::get('/', function(Request $request){
-//     return response()->json([
-//         "message" => $request->user()->currentAccessToken()
-//     ]);
-// })->middleware(['auth:sanctum']);
+Route::get('/', function(){
+    // try{
+
+    $tes = (new a)->b();
+
+    // }catch(\Illuminate\Database\Eloquent\ModelNotFoundException $e){
+    //     return response()->json([
+    //         'code' => $e->getMessage()
+    //     ]);
+    // }
+});
+
+class a{
+    public function b(){
+        throw new \Illuminate\Database\Eloquent\ModelNotFoundException("tidak di temukan");
+    }
+}

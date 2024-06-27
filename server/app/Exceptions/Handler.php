@@ -2,11 +2,14 @@
 
 namespace App\Exceptions;
 
+use App\Dto\Dto;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
@@ -28,43 +31,32 @@ class Handler extends ExceptionHandler
      */
     public function register(): void
     {
-        $this->renderable(function (Throwable $exception) {
-            if ($exception instanceof NotFoundHttpException) {
-                return response()->json([
-                    'status' => [
-                        'code' => Response::HTTP_NOT_FOUND,
-                        'description' => 'Route not found'
-                    ]
-                ], Response::HTTP_NOT_FOUND);
-            }
+        $this->renderable(function (NotFoundHttpException $e) {
+            return Dto::error(Response::HTTP_NOT_FOUND, $e->getMessage());
+        });
 
-            if ($exception instanceof AuthenticationException) {
-                return response()->json([
-                    'status' => [
-                        'code' => Response::HTTP_UNAUTHORIZED,
-                        'description' => 'Unauthenticated'
-                    ]
-                ], Response::HTTP_UNAUTHORIZED);
-            }
+        $this->renderable(function (AuthenticationException $e) {
+            return Dto::error(Response::HTTP_UNAUTHORIZED, $e->getMessage());
+        });
 
-            if ($exception instanceof AccessDeniedHttpException) {
-                return response()->json([
-                    'status' => [
-                        'code' => Response::HTTP_FORBIDDEN,
-                        'description' => 'Invalid ability provided'
-                    ]
-                ], Response::HTTP_FORBIDDEN);
-            }
+        $this->renderable(function (AccessDeniedHttpException $e) {
+            return Dto::error(Response::HTTP_FORBIDDEN, $e->getMessage());
+        });
 
+        $this->renderable(function (ConflictHttpException $e) {
+            return Dto::error(Response::HTTP_CONFLICT, $e->getMessage());
+        });
+
+        $this->renderable(function (BadRequestHttpException $e) {
+            return Dto::error(Response::HTTP_BAD_REQUEST, $e->getMessage());
+        });
+
+        $this->renderable(function (Throwable $e) {
             $trace = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 2);
             $method = isset($trace[1]['class']) ? "\nCONTROLLER::method >>> " . $trace[1]['function'] : 'Unknown' . "\n\n";
-            Log::error('Exception in ' . $method . ': ' . $exception->getMessage());
-            return response()->json([
-                'status' => [
-                    'code' => Response::HTTP_INTERNAL_SERVER_ERROR,
-                    'description' => 'Server error, please try again later'
-                ]
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+            Log::error('Exception in ' . $method . ': ' . $e->getMessage());
+
+            return Dto::error(Response::HTTP_INTERNAL_SERVER_ERROR, 'Server error, please try again later');
         });
     }
 }

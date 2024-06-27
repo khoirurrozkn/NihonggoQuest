@@ -23,14 +23,22 @@ class UserRepositoryImplement extends Eloquent implements UserRepository{
         return $this->model->create($user);
     }
 
-    public function findByUsernameOrEmail($usernameOrEmail, $username = null, $email = null){
-        return $this->model->where("username", $username ?? $usernameOrEmail)
-                            ->orWhere("email", $email ?? $usernameOrEmail)
+    public function findByEmail($email){
+        return $this->model->where('email', $email)->first();
+    }
+
+    public function findByUsername($username){
+        return $this->model->where('username', $username)->first();
+    }
+
+    public function findByUsernameOrEmail($usernameOrEmail){
+        return $this->model->where("username", $usernameOrEmail)
+                            ->orWhere("email", $usernameOrEmail)
                             ->first();
     }
 
     public function findById($id) {
-        return $this->model->find($id)->first();
+        return $this->model->find($id);
     }
 
     public function updateEmail($id, $email){
@@ -55,7 +63,7 @@ class UserRepositoryImplement extends Eloquent implements UserRepository{
         return ( $this->findById($id) )->delete();
     }
 
-    public function loginUpdateLastAcessByInstance($userModel, $date){
+    public function updateLastAcessByInstance($userModel, $date){
         return $userModel->update([
             'last_access' => $date
         ]);

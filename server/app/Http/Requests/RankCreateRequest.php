@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class AdminRegisterRequest extends FormRequest
+class RankCreateRequest extends FormRequest
 {
     use CustomValidationTrait;
     
@@ -24,8 +24,7 @@ class AdminRegisterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'username' => 'required|max:50',
-            'password' => 'required|max:50'
+            'name' => 'required|max:20'
         ];
     }
 }

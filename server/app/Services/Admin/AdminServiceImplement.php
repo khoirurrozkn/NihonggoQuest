@@ -8,6 +8,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Hash;
 use Ramsey\Uuid\Uuid;
 use Carbon\Carbon;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class AdminServiceImplement extends ServiceApi implements AdminService{
 
@@ -19,13 +22,8 @@ class AdminServiceImplement extends ServiceApi implements AdminService{
     }
 
     public function register($username, $password){
-        $findUser = $this->mainRepository->findByUsername($username);
-
-        if( $findUser ){
-            return [
-                "code" => Response::HTTP_CONFLICT,
-                "description" => "Username has been exists"
-            ];
+        if( $this->mainRepository->findByUsername($username) ){
+            throw new ConflictHttpException("Username has been exists");
         }
 
         return $this->mainRepository->create([
@@ -36,22 +34,19 @@ class AdminServiceImplement extends ServiceApi implements AdminService{
     }
 
     public function login($username, $password){
-        $findUser = $this->mainRepository->findByUsername($username);
+        $findAdmin = $this->mainRepository->findByUsername($username);
 
-        if( !$findUser || !Hash::check($password, $findUser['password'])){
-            return [
-                "code" => Response::HTTP_BAD_REQUEST,
-                "description" => "Username - Email or Password is invalid"
-            ];
+        if( !$findAdmin || !Hash::check($password, $findAdmin['password'])){
+            throw new BadRequestHttpException("Username or Password is invalid");
         }
 
-        $findUser['token'] = $findUser->createToken(
+        $findAdmin['token'] = $findAdmin->createToken(
             'Admin Login', 
             ['admin'], 
             Carbon::now()->addDay()
         )->plainTextToken;
 
-        return $findUser;
+        return $findAdmin;
     }
 
     public function findAll(){
@@ -59,22 +54,15 @@ class AdminServiceImplement extends ServiceApi implements AdminService{
     }
 
     public function findById($id){
-        $findUser = $this->mainRepository->findById($id);
+        $findAdmin = $this->mainRepository->findById($id);
 
-        if( !isset($findUser) ){
-            return [
-                "code" => Response::HTTP_NOT_FOUND,
-                "description" => "Admin not found"
-            ];
-        }
+        if( !isset($findAdmin) ) throw new NotFoundHttpException("Admin not found");
 
-        return $findUser;
+        return $findAdmin;
     }
 
     public function deleteById($id){
         $findAdmin = $this->findById($id);
-
-        if( isset($findAdmin['code']) ) return $findAdmin;
 
         return $this->mainRepository->deleteByInstance($findAdmin);
     }

@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\Hash;
 use Ramsey\Uuid\Uuid;
 use Carbon\Carbon;
 use DateTime;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class UserServiceImplement extends ServiceApi implements UserService
 {
@@ -20,13 +23,12 @@ class UserServiceImplement extends ServiceApi implements UserService
     }
 
     public function register($email, $username, $password){
-        $findUser = $this->mainRepository->findByUsernameOrEmail(null, $username, $email);
+        if( $this->mainRepository->findByEmail($email) ){
+            throw new ConflictHttpException('Email has been exists');
+        }
 
-        if( $findUser ){
-            return [
-                "code" => Response::HTTP_CONFLICT,
-                "description" => "Email Or Username has been exists"
-            ];
+        if( $this->mainRepository->findByUsername($username) ){
+            throw new ConflictHttpException('Username has been exists');
         }
 
         return $this->mainRepository->create([
@@ -41,15 +43,12 @@ class UserServiceImplement extends ServiceApi implements UserService
         $findUser = $this->mainRepository->findByUsernameOrEmail($usernameOrEmail);
 
         if( !$findUser || !Hash::check($password, $findUser['password'])){
-            return [
-                "code" => Response::HTTP_BAD_REQUEST,
-                "description" => "Username - Email or Password is invalid"
-            ];
+            throw new BadRequestHttpException("Username - Email or Password is invalid");
         }
 
         $date = new DateTime();
         $formattedDate = $date->format('Y-m-d H:i:s');
-        $this->mainRepository->loginUpdateLastAcessByInstance($findUser, $formattedDate);
+        $this->mainRepository->updateLastAcessByInstance($findUser, $formattedDate);
 
         $findUser['token'] = $findUser->createToken(
             'User Login', 
@@ -63,12 +62,7 @@ class UserServiceImplement extends ServiceApi implements UserService
     public function findById($id){
         $findUser = $this->mainRepository->findById($id);
 
-        if( !isset($findUser) ){
-            return [
-                "code" => Response::HTTP_NOT_FOUND,
-                "description" => "User not found"
-            ];
-        }
+        if( !isset($findUser) ) throw new NotFoundHttpException("User not found");
 
         return $findUser;
     }
@@ -87,10 +81,7 @@ class UserServiceImplement extends ServiceApi implements UserService
 
     public function updatePassword($id, $passwordFromToken, $oldPassword, $newPassword){
         if( !Hash::check($oldPassword, $passwordFromToken) ){
-            return [
-                "code" => Response::HTTP_BAD_REQUEST,
-                "description" => "Old password don't match"
-            ];
+            throw new BadRequestHttpException("Old password don't match");
         }
 
         if( $oldPassword === $newPassword ) return true;
@@ -100,10 +91,7 @@ class UserServiceImplement extends ServiceApi implements UserService
 
     public function deleteById($idFromToken, $idFromParam, $isAdmin){
         if( $isAdmin ) {
-            $findUser = $this->findById($idFromParam);
-            
-            if( isset( $findUser['code'] ) ) return $findUser;
-
+            $this->findById($idFromParam);
             return $this->mainRepository->deleteById($idFromParam);
         };
 
