@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('quiz_items', function (Blueprint $table) {
             $table->id();
-            $table->string("question")->nullable(false);
-            $table->string("answer")->nullable(false);
+            $table->string("question", 255)->nullable(false);
+            $table->string("answer", 255)->nullable(false);
             $table->unsignedBigInteger("quiz_id")->nullable(false);
 
             $table->foreign('quiz_id')->references('id')->on('quizzes');

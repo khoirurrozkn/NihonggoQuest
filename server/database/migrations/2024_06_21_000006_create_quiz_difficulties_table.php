@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('quiz_difficulties', function (Blueprint $table) {
             $table->id();
-            $table->string("level")->unique()->nullable(false);
+            $table->string("level", 20)->unique()->nullable(false);
         });
     }
 

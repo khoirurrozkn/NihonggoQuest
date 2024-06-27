@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('user_profiles', function (Blueprint $table) {
             $table->id();
-            $table->string("bio")->default("Japan language is easy")->nullable();
+            $table->string("bio", 120)->default("Japan language is easy")->nullable();
             $table->ulid("user_id")->unique()->nullable(false);
             $table->unsignedBigInteger("photo_profile_id")->default(1);
             $table->unsignedBigInteger("rank_id")->default(1);

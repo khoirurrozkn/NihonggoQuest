@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('quizzes', function (Blueprint $table) {
             $table->id();
-            $table->string("title")->nullable(false);
+            $table->string("title", 50)->nullable(false);
             $table->timestamp("created_at")->nullable(false);
             $table->unsignedBigInteger("quiz_difficulty_id")->nullable(false);
 

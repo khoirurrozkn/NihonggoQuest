@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('ranks', function (Blueprint $table) {
             $table->id();
-            $table->string("name")->unique()->nullable(false);
+            $table->string("name", 20)->unique()->nullable(false);
         });
     }
 
