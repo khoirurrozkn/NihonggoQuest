@@ -15,7 +15,7 @@ return new class extends Migration
             $table->uuid("id")->primary()->unique()->nullable(false);
             $table->string("email", 255)->unique()->nullable(false);
             $table->string("username", 50)->unique()->nullable(false);
-            $table->string("password", 50)->nullable(false);
+            $table->string("password", 255)->nullable(false);
             $table->timestamp("last_access")->nullable(false);
         });
     }
