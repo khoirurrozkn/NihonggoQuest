@@ -49,7 +49,7 @@ class UserServiceImplement extends ServiceApi implements UserService
 
         $date = new DateTime();
         $formattedDate = $date->format('Y-m-d H:i:s');
-        $this->mainRepository->loginUpdateLastAcess($findUser, $formattedDate);
+        $this->mainRepository->loginUpdateLastAcessByInstance($findUser, $formattedDate);
 
         $findUser['token'] = $findUser->createToken(
             'User Login', 
@@ -100,7 +100,10 @@ class UserServiceImplement extends ServiceApi implements UserService
 
     public function deleteById($idFromToken, $idFromParam, $isAdmin){
         if( $isAdmin ) {
-            $this->findById($idFromParam);
+            $findUser = $this->findById($idFromParam);
+            
+            if( isset( $findUser['code'] ) ) return $findUser;
+
             return $this->mainRepository->deleteById($idFromParam);
         };
 

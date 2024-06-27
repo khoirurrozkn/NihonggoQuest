@@ -156,7 +156,6 @@ class UserController extends Controller
             );
         }
 
-        $request->user()->currentAccessToken()->delete();
         return $this->responseDataSuccess(
             Response::HTTP_OK, 
             "Success delete user",

@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
-use Illuminate\Http\Request;
+// use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,19 +16,17 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::prefix('/auth')->group(function () {
+Route::prefix('/user')->group(function () {
+
     Route::post('/register', [UserController::class, 'register']);
     Route::post('/login', [UserController::class, 'login']);
-});
 
-Route::prefix('/user')->middleware('auth:sanctum')->group(function () {
-
-    Route::middleware('abilities:user,admin')->group(function() {
+    Route::middleware(['auth:sanctum', 'abilities:user,admin'])->group(function() {
         Route::get('/{id}', [UserController::class, 'findById']);
         Route::delete('/{id}', [UserController::class, 'deleteById']);
     });
     
-    Route::middleware('ability:user')->group(function() {
+    Route::middleware(['auth:sanctum', 'ability:user'])->group(function() {
         Route::put('/email', [UserController::class, 'updateEmail']);
         Route::put('/username', [UserController::class, 'updateUsername']);
         Route::put('/password', [UserController::class, 'updatePassword']);
@@ -36,20 +34,22 @@ Route::prefix('/user')->middleware('auth:sanctum')->group(function () {
 
 });
 
-Route::prefix('/admin/auth')->group(function () {
+Route::prefix('/admin')->group(function () {
 
     Route::post('/login', [AdminController::class, 'login']);
 
     Route::middleware(['auth:sanctum', 'ability:admin'])->group(function() {
         Route::post('/register', [AdminController::class, 'register']);
+        Route::get('/', [AdminController::class, 'findAll']);
+        Route::delete('/{id}', [AdminController::class, 'deleteById']);
     });
     
 });
 
 
 
-Route::get('/', function(Request $request){
-    return response()->json([
-        "message" => $request->user()->currentAccessToken()
-    ]);
-})->middleware(['auth:sanctum']);
+// Route::get('/', function(Request $request){
+//     return response()->json([
+//         "message" => $request->user()->currentAccessToken()
+//     ]);
+// })->middleware(['auth:sanctum']);

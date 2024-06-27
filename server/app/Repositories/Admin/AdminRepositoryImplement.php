@@ -19,7 +19,19 @@ class AdminRepositoryImplement extends Eloquent implements AdminRepository{
         $this->model = $model;
     }
 
+    public function findAll(){
+        return $this->model->all();
+    }
+
+    public function findById($id) {
+        return $this->model->find($id)->first();
+    }
+
     public function findByUsername($username){
         return $this->model->where("username", $username)->first();
+    }
+
+    public function deleteByInstance($adminModel){
+        return $adminModel->delete();
     }
 }

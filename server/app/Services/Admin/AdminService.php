@@ -8,4 +8,7 @@ interface AdminService extends BaseService{
 
     public function register($username, $password);
     public function login($username, $password);
+    public function findAll();
+    public function findById($id);
+    public function deleteById($id);
 }

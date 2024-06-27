@@ -60,4 +60,38 @@ class AdminController extends Controller
             new AdminResource($response)
         );
     }
+
+    public function findAll(){
+        $response = $this->adminService->findAll();
+
+        if( isset($response['code']) ){
+            return $this->responseError(
+                $response['code'], 
+                $response['description']
+            );
+        }
+
+        return $this->responseDataSuccess(
+            Response::HTTP_OK, 
+            "Success find all admin",
+            AdminResource::collection($response)
+        );
+    }
+
+    public function deleteById($id){
+        $response = $this->adminService->deleteById($id);
+
+        if( isset($response['code']) ){
+            return $this->responseError(
+                $response['code'], 
+                $response['description']
+            );
+        }
+
+        return $this->responseDataSuccess(
+            Response::HTTP_OK, 
+            "Success delete admin",
+            null
+        );
+    }
 }

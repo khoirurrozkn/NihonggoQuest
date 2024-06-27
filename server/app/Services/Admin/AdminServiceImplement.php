@@ -53,4 +53,29 @@ class AdminServiceImplement extends ServiceApi implements AdminService{
 
         return $findUser;
     }
+
+    public function findAll(){
+        return $this->mainRepository->findAll();
+    }
+
+    public function findById($id){
+        $findUser = $this->mainRepository->findById($id);
+
+        if( !isset($findUser) ){
+            return [
+                "code" => Response::HTTP_NOT_FOUND,
+                "description" => "Admin not found"
+            ];
+        }
+
+        return $findUser;
+    }
+
+    public function deleteById($id){
+        $findAdmin = $this->findById($id);
+
+        if( isset($findAdmin['code']) ) return $findAdmin;
+
+        return $this->mainRepository->deleteByInstance($findAdmin);
+    }
 }
