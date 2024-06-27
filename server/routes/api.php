@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -34,8 +36,20 @@ Route::prefix('/user')->middleware('auth:sanctum')->group(function () {
 
 });
 
-// Route::get('/', function(){
-//     return response()->json([
-//         "message" => "wadawd"
-//     ]);
-// })->middleware(['auth:sanctum', 'ability:user']);
+Route::prefix('/admin/auth')->group(function () {
+
+    Route::post('/login', [AdminController::class, 'login']);
+
+    Route::middleware(['auth:sanctum', 'ability:admin'])->group(function() {
+        Route::post('/register', [AdminController::class, 'register']);
+    });
+    
+});
+
+
+
+Route::get('/', function(Request $request){
+    return response()->json([
+        "message" => $request->user()->currentAccessToken()
+    ]);
+})->middleware(['auth:sanctum']);

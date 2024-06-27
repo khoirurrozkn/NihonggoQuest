@@ -4,10 +4,8 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class RegisterRequest extends FormRequest
+class AdminLoginRequest extends FormRequest
 {
-    use CustomValidationTrait;
-
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -24,10 +22,8 @@ class RegisterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => 'required|max:50|email:dns',
             'username' => 'required|max:50',
-            'password' => 'required|max:50',
-            'verified_password' => 'required|same:password'
+            'password' => 'required|max:50'
         ];
     }
 }

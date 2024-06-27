@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\LoginRequest;
-use App\Http\Requests\RegisterRequest;
+use App\Http\Requests\UserLoginRequest;
+use App\Http\Requests\UserRegisterRequest;
 use App\Http\Requests\UserUpdateEmailRequest;
 use App\Http\Requests\UserUpdatePasswordRequest;
 use App\Http\Requests\UserUpdateUsernameRequest;
@@ -21,8 +21,8 @@ class UserController extends Controller
         $this->userService = $userService;
     }
 
-    public function register(RegisterRequest $registerRequest){
-        $request = $registerRequest->validated();
+    public function register(UserRegisterRequest $userRegisterRequest){
+        $request = $userRegisterRequest->validated();
 
         $response = $this->userService->register(
             $request['email'],
@@ -44,8 +44,8 @@ class UserController extends Controller
         );
     }
 
-    public function login(LoginRequest $loginRequest){
-        $request = $loginRequest->validated();
+    public function login(UserLoginRequest $userLoginRequest){
+        $request = $userLoginRequest->validated();
 
         $response = $this->userService->login(
             $request['username_or_email'],
