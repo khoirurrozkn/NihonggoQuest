@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string("question", 255)->nullable(false);
             $table->string("answer", 255)->nullable(false);
+            $table->string("file_url", 255)->nullable();
             $table->unsignedBigInteger("quiz_id")->nullable(false);
 
             $table->foreign('quiz_id')->references('id')->on('quizzes');

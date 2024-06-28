@@ -44,6 +44,7 @@ class UserServiceImplement extends ServiceApi implements UserService
         ]);
 
         $this->userProfileRepository->create([
+            'id' => Uuid::uuid7()->toString(),
             'user_id' => $createdUser['id'],
         ]);
 

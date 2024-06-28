@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('photo_profiles', function (Blueprint $table) {
             $table->id();
-            $table->string("url", 255)->unique()->nullable(false);
+            $table->string("photo_url", 255)->unique()->nullable(false);
         });
     }
 

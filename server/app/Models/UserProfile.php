@@ -9,10 +9,10 @@ class UserProfile extends Model
 {
     use HasFactory;
 
-    protected $guarded = ['id'];
+    protected $guarded = [];
 
     public $timestamps = false;
-    
+
     public function photoProfile(){
         return $this->belongsto(PhotoProfile::class, 'photo_profile_id', 'id');
     }
