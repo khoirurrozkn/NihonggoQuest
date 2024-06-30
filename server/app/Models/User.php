@@ -15,6 +15,10 @@ class User extends Model
 
     public $timestamps = false;
 
+    public function getRouteKeyName(){
+        return 'uuid';
+    }
+
     public function getIncrementing(){
         return false;
     }

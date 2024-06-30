@@ -13,10 +13,11 @@ return new class extends Migration
     {
         Schema::create('user_profiles', function (Blueprint $table) {
             $table->uuid("id")->primary()->unique()->nullable(false);
-            $table->string("bio", 120)->default("Japan language is easy")->nullable();
+            $table->string("nickname", 25)->default("Japanese learner")->nullable(false);
+            $table->string("bio", 120)->default("Japan language is easy")->nullable(false);
             $table->uuid("user_id")->unique()->nullable(false);
-            $table->unsignedBigInteger("photo_profile_id")->default(1);
-            $table->unsignedBigInteger("rank_id")->default(1);
+            $table->unsignedBigInteger("photo_profile_id")->default(1)->nullable(false);
+            $table->unsignedBigInteger("rank_id")->default(1)->nullable(false);
 
             $table->foreign("user_id")->references("id")->on("users")->onDelete("cascade");
             $table->foreign("photo_profile_id")->references("id")->on("photo_profiles");

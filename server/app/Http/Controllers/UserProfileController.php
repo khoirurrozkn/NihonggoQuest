@@ -2,32 +2,28 @@
 
 namespace App\Http\Controllers;
 
+use App\Dto\Dto;
 use App\Http\Requests\UserProfileUpdateRequest;
-use App\Services\UserProfile\UserProfileServiceImplement;
+use App\Http\Resources\UserProfileResource;
+use App\Models\UserProfile;
+use Symfony\Component\HttpFoundation\Response;
 
 class UserProfileController extends Controller
 {
-    private $userProfile;
+    public function update(UserProfileUpdateRequest $userProfileUpdateRequest){
+        $request = $userProfileUpdateRequest->validated();
 
-    public function __construct(UserProfileServiceImplement $userProfile)
-    {
-        $this->userProfile = $userProfile;
+        $findUserProfile = UserProfile::find(auth()->user()->userProfile->id);
+        $findUserProfile->update([
+            'nickname' => $request['nickname'],
+            'bio' => $request['bio'],
+            'photo_profile_id' => $request['photo_profile_id']
+        ]);
+        
+        return Dto::success(
+            Response::HTTP_OK,
+            "Success update user profile",
+            new UserProfileResource($findUserProfile)
+        );
     }
-
-    // public function updateEmail(UserProfileUpdateRequest $userProfileUpdateRequest){
-    //     $request = $userProfileUpdateRequest->validated();
-
-    //     $this->userProfile->update(
-    //         auth()->user()->id,
-    //         auth()->user()->email,
-    //         $request['email']
-    //     );
-            
-    //     auth()->user()->email = $request['email'];
-    //     return Dto::success(
-    //         Response::HTTP_OK, 
-    //         "Success update email user",
-    //         new UserResource(auth()->user())
-    //     );
-    // }
 }

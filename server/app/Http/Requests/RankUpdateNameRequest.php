@@ -4,10 +4,10 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UserUpdateEmailRequest extends FormRequest
+class RankUpdateNameRequest extends FormRequest
 {
     use CustomValidationTrait;
-
+    
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -24,7 +24,7 @@ class UserUpdateEmailRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => 'required|max:255|email:dns|unique:users,email'
+            'name' => 'required|max:20|unique:ranks,name'
         ];
     }
 }

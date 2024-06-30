@@ -17,7 +17,7 @@ class RankResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'user_profiles' => UserProfileResource::collection($this->whenLoaded('userProfiles'))
+            'user_profiles' => $this->whenNotNull($this->user_profiles)
         ];
     }
 }

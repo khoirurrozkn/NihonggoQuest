@@ -24,7 +24,7 @@ class UserUpdateUsernameRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'username' => 'required|max:50',
+            'username' => 'required|max:50|unique:users,username',
         ];
     }
 }

@@ -24,8 +24,9 @@ class AdminRegisterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'username' => 'required|max:50',
-            'password' => 'required|max:50'
+            'username' => 'required|max:50|unique:admins,username',
+            'password' => 'required|max:50',
+            'verified_password' => 'required|same:password'
         ];
     }
 }

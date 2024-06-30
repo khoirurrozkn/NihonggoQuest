@@ -16,8 +16,9 @@ class UserProfileResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'photo_profile' => $this->photoProfile->url,
             'bio' => $this->bio,
+            'nickname' => $this->nickname,
+            'photo_profile' => $this->photoProfile->photo_url,
             'rank' => $this->rank->name
         ];
     }

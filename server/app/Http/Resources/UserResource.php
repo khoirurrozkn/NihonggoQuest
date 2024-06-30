@@ -19,7 +19,7 @@ class UserResource extends JsonResource
             'email' => $this->email,
             'username' => $this->username,
             'token' => $this->whenNotNull($this->token),
-            'user_profile' => new UserProfileResource($this->userProfile)
+            'user_profile' => new UserProfileResource( $this->whenLoaded('userProfile') )
         ];
     }
 }

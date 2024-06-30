@@ -24,7 +24,7 @@ class PhotoProfileRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'photo_url' => 'required|max:255'
+            'photo_url' => 'required|max:255|unique:photo_profiles,photo_url'
         ];
     }
 }

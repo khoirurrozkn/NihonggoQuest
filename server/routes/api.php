@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PhotoProfileController;
 use App\Http\Controllers\RankController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\UserProfileController;
 use App\Models\Admin;
 use App\Models\PhotoProfile;
 use App\Models\Rank;
@@ -30,8 +31,8 @@ Route::prefix('/user')->group(function () {
     Route::middleware('auth:sanctum')->group(function() {
 
         Route::middleware('abilities:user,admin')->group(function() {
-            Route::get('/{id}', [UserController::class, 'findById']);
-            Route::delete('/{id}', [UserController::class, 'deleteById']);
+            Route::get('/{user:id}', [UserController::class, 'findById']);
+            Route::delete('/{user:id}', [UserController::class, 'deleteById']);
         });
         
         Route::middleware('ability:user')->group(function() {
@@ -50,7 +51,7 @@ Route::prefix('/admin')->group(function () {
     Route::middleware(['auth:sanctum', 'ability:admin'])->group(function() {
         Route::post('/register', [AdminController::class, 'register']);
         Route::get('/', [AdminController::class, 'findAll']);
-        Route::delete('/{id}', [AdminController::class, 'deleteById']);
+        Route::delete('/{admin:id}', [AdminController::class, 'deleteById']);
     });
     
 });
@@ -59,13 +60,20 @@ Route::prefix('/rank')->middleware('auth:sanctum')->group(function () {
 
     Route::middleware('abilities:user,admin')->group(function() {
         Route::get('/', [RankController::class, 'findAll']);
-        Route::get('/{id}', [RankController::class, 'findByIdWithTheirUsers']);
+        Route::get('/{rank:id}', [RankController::class, 'findByIdWithTheirUsers']);
     });
 
     Route::middleware('ability:admin')->group(function() {
         Route::post('/', [RankController::class, 'create']);
+        Route::put('/name/{rank:id}', [RankController::class, 'updateNameById']);
     });
     
+});
+
+Route::prefix('/user-profile')->middleware('auth:sanctum')->group(function () {
+    Route::middleware('ability:user')->group(function() {
+        Route::put('/', [UserProfileController::class, 'update']);
+    });
 });
 
 Route::prefix('/photo-profile')->middleware('auth:sanctum')->group(function () {
@@ -76,7 +84,7 @@ Route::prefix('/photo-profile')->middleware('auth:sanctum')->group(function () {
 
     Route::middleware('ability:admin')->group(function() {
         Route::post('/', [PhotoProfileController::class, 'create']);
-        Route::put('/{id}', [PhotoProfileController::class, 'updatePhotoUrlById']);
+        Route::put('/{photoProfile:id}', [PhotoProfileController::class, 'updatePhotoUrlById']);
     });
 
 });

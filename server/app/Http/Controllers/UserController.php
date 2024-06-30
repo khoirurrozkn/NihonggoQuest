@@ -9,118 +9,153 @@ use App\Http\Requests\UserUpdateEmailRequest;
 use App\Http\Requests\UserUpdatePasswordRequest;
 use App\Http\Requests\UserUpdateUsernameRequest;
 use App\Http\Resources\UserResource;
-use App\Services\User\UserServiceImplement;
+use App\Models\User;
+use App\Models\UserProfile;
+use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Hash;
+use Ramsey\Uuid\Uuid;
+use DateTime;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class UserController extends Controller
 {
-    private $userService;
-
-    public function __construct(UserServiceImplement $userService)
-    {
-        $this->userService = $userService;
-    }
-
     public function register(UserRegisterRequest $userRegisterRequest){
         $request = $userRegisterRequest->validated();
 
-        $createdUser = $this->userService->register(
-            $request['email'],
-            $request['username'],
-            $request['password']
-        );
+        DB::beginTransaction();
 
-        return Dto::success(
-            Response::HTTP_CREATED, 
-            "Success create user", 
-            new UserResource($createdUser)
-        );
+        try{
+
+            $createdUser = User::create([
+                'id' => Uuid::uuid7()->toString(),
+                'username' => $request['username'],
+                'email' => $request['email'],
+                'password' => Hash::make($request['password'])
+            ]);
+
+            UserProfile::create([
+                'id' => Uuid::uuid7()->toString(),
+                'user_id' => $createdUser['id'],
+            ]);
+
+            DB::commit();
+
+            return Dto::success(
+                Response::HTTP_CREATED, 
+                "Success create user", 
+                new UserResource($createdUser)
+            );
+
+        }catch(Exception $e){
+
+            DB::rollBack();
+            throw new Exception($e->getMessage());
+
+        }
     }
 
     public function login(UserLoginRequest $userLoginRequest){
         $request = $userLoginRequest->validated();
 
-        $response = $this->userService->login(
-            $request['username_or_email'],
-            $request['password']
-        );
+        $findUser = User::with('userProfile.photoProfile', 'userProfile.rank')
+            ->where("username", $request['username_or_email'])
+            ->orWhere("email", $request['username_or_email'])
+            ->first();
+        
+        if( !$findUser || !Hash::check($request['password'], $findUser['password'])){
+            throw new BadRequestHttpException("Username - Email or Password is invalid");
+        }
+
+        $findUser->update([
+            'last_access' => ( new DateTime() )->format('Y-m-d H:i:s')
+        ]);
+
+        $findUser['token'] = $findUser->createToken(
+            'User Login', 
+            ['user'], 
+            Carbon::now()->addDay()
+        )->plainTextToken;
 
         return Dto::success(
             Response::HTTP_OK, 
             "Success login user", 
-            new UserResource($response)
+            new UserResource($findUser)
         );
     }
 
-    public function findById($id){
-        $response = $this->userService->findById($id);
-        
+    public function findById(User $user){
+        $user->load(['userProfile.rank', 'userProfile.photoProfile']);
+
         return Dto::success(
-            Response::HTTP_OK, 
+            Response::HTTP_OK,
             "Success find by id user",
-            new UserResource($response)
+            new UserResource($user)
         );
     }
 
     public function updateEmail(UserUpdateEmailRequest $userUpdateEmailRequest){
         $request = $userUpdateEmailRequest->validated();
 
-        $this->userService->updateEmail(
-            auth()->user()->id,
-            auth()->user()->email,
-            $request['email']
-        );
+        $findUser = User::find(auth()->user()->id);
+        $findUser->update([
+            'email' => $request['email']
+        ]);
             
-        auth()->user()->email = $request['email'];
         return Dto::success(
             Response::HTTP_OK, 
             "Success update email user",
-            new UserResource(auth()->user())
+            new UserResource($findUser)
         );
     }
 
     public function updateUsername(UserUpdateUsernameRequest $userUpdateUsernameRequest){
         $request = $userUpdateUsernameRequest->validated();
 
-        $this->userService->updateUsername(
-            auth()->user(),
-            auth()->user()->username,
-            $request['username'],
-        );
+        $findUser = User::find(auth()->user()->id);
+        $findUser->update([
+            'username' => $request['username']
+        ]);
 
-        auth()->user()->username = $request['username'];
         return Dto::success(
-            Response::HTTP_OK, 
+            Response::HTTP_OK,
             "Success update username user",
-            new UserResource(auth()->user())
+            new UserResource($findUser)
         );
     }
 
     public function updatePassword(UserUpdatePasswordRequest $userUpdatePasswordRequest){
         $request = $userUpdatePasswordRequest->validated();
 
-        $this->userService->updatePassword(
-            auth()->user(),
-            auth()->user()->password,
-            $request['old_password'],
-            $request['new_password']
-        );
+        if( !Hash::check($request['old_password'], auth()->user()->password) ){
+            throw new BadRequestHttpException("Old password don't match");
+        }
+
+        User::find(auth()->user()->id)
+            ->update([
+                'password' => Hash::make($request['new_password'])
+            ]);
 
         return Dto::success(
             Response::HTTP_OK, 
-            "Success update password", 
-            new UserResource(auth()->user())
+            "Success update password user", 
+            null
         );
     }
 
-    public function deleteById(Request $request, $paramId){
-        $isAdmin = $request->user()->currentAccessToken()->abilities[0] === 'admin';
-        $this->userService->deleteById(
-            auth()->user()->id,
-            $paramId,
-            $isAdmin
-        );
+    public function deleteById(Request $request, User $user){
+        
+        if( $request->user()->currentAccessToken()->abilities[0] === 'admin' ){
+            $user->tokens()->delete();
+            $user->delete();
+        }else{
+            $findUser = User::find(auth()->user()->id);
+            $findUser->tokens()->delete();
+            $findUser->delete();
+        }
 
         return Dto::success(
             Response::HTTP_OK, 

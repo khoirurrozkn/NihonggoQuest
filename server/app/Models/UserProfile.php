@@ -13,6 +13,14 @@ class UserProfile extends Model
 
     public $timestamps = false;
 
+    public function getIncrementing(){
+        return false;
+    }
+
+    public function getKeyType(){
+        return "string";
+    }
+
     public function photoProfile(){
         return $this->belongsto(PhotoProfile::class, 'photo_profile_id', 'id');
     }
